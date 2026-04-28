@@ -10,7 +10,8 @@ import DashboardLayout from './components/DashboardLayout';
 import AdminPage from './pages/AdminPage';
 import ElectionsPage from './pages/ElectionsPage';
 import ResultsPage from './pages/ResultsPage';
-import SessionTimeout from './components/SessionTimeout'; // Timer Import
+import SessionTimeout from './components/SessionTimeout';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,6 +60,7 @@ function App() {
               <Route path="/vote" element={<DashboardLayout setAuth={setIsAuthenticated}> <VotePage /> </DashboardLayout>} />
               <Route path="/results" element={<DashboardLayout setAuth={setIsAuthenticated}> <ResultsPage /> </DashboardLayout>} />
               <Route path="/support" element={<DashboardLayout setAuth={setIsAuthenticated}> <h2 className="text-2xl font-bold">Help & Support Desk</h2> </DashboardLayout>} />
+              <Route path="/profile" element={<DashboardLayout setAuth={setIsAuthenticated}> <ProfilePage /> </DashboardLayout>} />
             </>
           ) : null}
 

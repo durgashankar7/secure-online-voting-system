@@ -35,6 +35,25 @@ public class Voter {
     @Column(columnDefinition = "boolean default false")
     private boolean isVerified;
 
-    @Column(columnDefinition = "boolean default false")
-    private boolean hasVoted;
+    // NAYA: Ab boolean hatakar hum IDs ka collection bana rahe hain
+    @jakarta.persistence.ElementCollection
+    private java.util.Set<Integer> votedElectionIds = new java.util.HashSet<>();
+
+    public java.util.Set<Integer> getVotedElectionIds() {
+        return votedElectionIds;
+    }
+
+    public void setVotedElectionIds(java.util.Set<Integer> votedElectionIds) {
+        this.votedElectionIds = votedElectionIds;
+    }
+
+    // Inko manually likhne se backend 100% name ko frontend tak bhejega
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

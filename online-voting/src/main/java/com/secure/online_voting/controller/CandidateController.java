@@ -72,4 +72,9 @@ public class CandidateController {
         }
         return ResponseEntity.badRequest().body("Error: Candidate nahi mila!");
     }
+
+    @GetMapping("/election/{electionId}")
+    public ResponseEntity<List<Candidate>> getCandidatesByElectionId(@PathVariable Integer electionId) {
+        return ResponseEntity.ok(candidateRepository.findByElectionId(electionId));
+    }
 }

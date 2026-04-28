@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Landmark, ShieldCheck } from 'lucide-react';
+import BackButton from '../components/BackButton';
 
 const LoginPage = ({ setAuth }) => {
   const [step, setStep] = useState(1);
@@ -53,6 +54,11 @@ const LoginPage = ({ setAuth }) => {
 
   return (
     <div className="min-h-screen bg-slate-200 flex flex-col items-center justify-center p-4">
+      {/* NAYA BACK BUTTON YAHAN HAI */}
+      <div className="absolute top-6 left-6">
+        <BackButton />
+      </div>
+      
       <div className="bg-white p-10 rounded-lg shadow-2xl w-full max-w-lg border-t-8 border-indigo-900 relative overflow-hidden">
         
         {/* Background Watermark/Design */}

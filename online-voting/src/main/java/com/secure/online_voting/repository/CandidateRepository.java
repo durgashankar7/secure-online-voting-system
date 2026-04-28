@@ -11,5 +11,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Integer> {
     // YE LINE MISSING THI MAALIK! 
     // Ye Spring Data JPA ko batati hai ki in 3 columns ke hisaab se filter karna hai
     List<Candidate> findByElectionLevelAndElectionTypeAndRegionOrderByVotesDesc(String electionLevel, String electionType, String region);
+    List<Candidate> findByElectionId(Integer electionId);
 
 }

@@ -54,4 +54,13 @@ public class Candidate {
         this.votes = votes;
     }
     // --------------------------------------------------------
+    private Integer electionId;
+
+    public Integer getElectionId() {
+        return electionId;
+    }
+
+    public void setElectionId(Integer electionId) {
+        this.electionId = electionId;
+    }
 }

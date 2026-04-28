@@ -26,14 +26,28 @@ const ElectionsPage = () => {
     setIsLoading(false);
   };
 
-  // Active tab ke hisaab se elections ko filter karna
   const filteredElections = elections.filter(e => e.status === activeTab);
 
-  // Date ko padhne layk format me badalna
   const formatDate = (dateString) => {
     if (!dateString) return 'TBA';
     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString('en-IN', options);
+  };
+
+  // NAYA: Election data ko sath mein le jaane wala function
+  const handleEnterVotingRoom = (election) => {
+    navigate('/vote', { 
+      state: { 
+        prefillData: {
+          electionId: election.electionId, // NAYA MAGIC YAHAN HAI
+          level: election.electionLevel,
+          type: election.electionType,
+          region: election.region,
+          university: election.universityName || '',
+          batch: election.batch || ''
+        } 
+      } 
+    });
   };
 
   return (
@@ -83,7 +97,6 @@ const ElectionsPage = () => {
           filteredElections.map((election) => (
             <div key={election.electionId} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
               
-              {/* Card Header (Status based color) */}
               <div className={`p-4 border-b flex justify-between items-start ${
                 activeTab === 'ONGOING' ? 'bg-red-50 border-red-100' : 
                 activeTab === 'UPCOMING' ? 'bg-indigo-50 border-indigo-100' : 
@@ -102,7 +115,6 @@ const ElectionsPage = () => {
                 {activeTab === 'ONGOING' && <Radio size={24} className="text-red-500 animate-pulse" />}
               </div>
 
-              {/* Card Body */}
               <div className="p-6 flex-1 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -133,7 +145,8 @@ const ElectionsPage = () => {
               {/* Card Footer (Action Buttons) */}
               <div className="p-4 bg-slate-50 border-t border-slate-200">
                 {activeTab === 'ONGOING' && (
-                  <button onClick={() => navigate('/vote')} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2 shadow-md">
+                  // NAYA: onClick par naya function laga diya hai
+                  <button onClick={() => handleEnterVotingRoom(election)} className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2 shadow-md">
                     Enter Secure Voting Room <ChevronRight size={18} />
                   </button>
                 )}

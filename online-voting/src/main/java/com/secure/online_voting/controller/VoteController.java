@@ -54,8 +54,15 @@ public class VoteController {
         if (!voter.isVerified()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Voter is not verified (Login required)");
         }
-        if (voter.isHasVoted()) {
-            return ResponseEntity.badRequest().body("Error: You have already cast your vote!");
+        // Security Checks
+        if (!voter.isVerified()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Voter is not verified (Login required)");
+        }
+        
+        // NAYA CHECK: Kya voter ne IS SPECIFIC election me vote de diya hai?
+        Candidate targetCandidate = candidateRepository.findById(candidateId).orElse(null);
+        if (targetCandidate != null && voter.getVotedElectionIds().contains(targetCandidate.getElectionId())) {
+            return ResponseEntity.badRequest().body("Error: You have already cast your vote in this specific election!");
         }
 
         // 1. Vote table me anonymous entry save karo (voter_id nahi daalenge)
@@ -64,7 +71,10 @@ public class VoteController {
         voteRepository.save(vote);
 
         // 2. Voter ko mark karo ki usne vote de diya hai
-        voter.setHasVoted(true);
+        // 2. Voter ko mark karo ki usne is ELECTION me vote de diya hai
+        if (targetCandidate != null) {
+            voter.getVotedElectionIds().add(targetCandidate.getElectionId());
+        }
         voterRepository.save(voter);
 
         // ---------------------------------------------------------

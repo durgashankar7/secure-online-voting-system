@@ -1,5 +1,5 @@
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Home, Vote, BarChart3, HelpCircle, LogOut, Landmark, ListChecks } from 'lucide-react';
+import { Home, Vote, BarChart3, HelpCircle, LogOut, Landmark, ListChecks, User } from 'lucide-react'; // NAYA: User icon import kiya
 
 const DashboardLayout = ({ children, setAuth }) => {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ const DashboardLayout = ({ children, setAuth }) => {
   // Nav items ka array taaki active state manage karna asan ho
   const navItems = [
     { name: 'Home Overview', path: '/home', icon: Home },
+    { name: 'My Profile', path: '/profile', icon: User }, // NAYA: Yahan Profile page add kar diya
     { name: 'Elections', path: '/elections', icon: ListChecks },
     { name: 'Cast Vote', path: '/vote', icon: Vote },
     { name: 'Live Results', path: '/results', icon: BarChart3 },

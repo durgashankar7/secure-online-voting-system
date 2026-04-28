@@ -64,7 +64,7 @@ public class VoterController {
                     voter.setName(name);
                     voter.setEmail(email);
                     voter.setVerified(false); // Shuru me un-verified
-                    voter.setHasVoted(false); // Shuru me vote nahi diya
+                    //voter.setHasVoted(false); // Shuru me vote nahi diya
                     
                     votersToSave.add(voter);
                 }

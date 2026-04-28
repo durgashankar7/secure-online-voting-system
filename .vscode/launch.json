@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot Server Start",
+            "request": "launch",
+            "mainClass": "com.secure.online_voting.OnlineVotingApplication",
+            "projectName": "online-voting",
+            "env": {
+                "DB_PASSWORD": "Durga@123",
+                "MAIL_PASSWORD": "tfcr ihsi lyxm kcpx"
+            }
+        }
+    ]
+}

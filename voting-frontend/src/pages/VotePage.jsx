@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // NAYA: useLocation add kiya
 import { ShieldCheck, User, AlertCircle, CheckCircle2, MapPin, Building, Flag, Clock, GraduationCap, CalendarDays } from 'lucide-react';
 
 const VotePage = () => {
   const [electionLevel, setElectionLevel] = useState('');
   const [electionType, setElectionType] = useState('');
   const [region, setRegion] = useState('');
-  
-  // Naye States University aur Batch ke liye
   const [university, setUniversity] = useState('');
   const [batch, setBatch] = useState('');
   
@@ -20,24 +18,44 @@ const VotePage = () => {
   const [hasVoted, setHasVoted] = useState(false);
   
   const navigate = useNavigate();
+  const location = useLocation(); // NAYA: Pichle page ka data padhne ke liye
   const enrollmentNumber = localStorage.getItem("enrollment");
 
-  const handleSelectionSubmit = (e) => {
-    e.preventDefault();
-    if (electionLevel === 'Panchayat' || electionLevel === 'State') {
-      setIsBeta(true);
-    } else {
-      setIsBeta(false);
-      fetchCandidates(); 
+  // NAYA: Jab page load ho, check karo kya data aaya hai
+  useEffect(() => {
+    if (location.state && location.state.prefillData) {
+      const { electionId, level, type, region, university, batch } = location.state.prefillData;
+      
+      // States set karo
+      setElectionLevel(level);
+      setElectionType(type);
+      setRegion(region);
+      setUniversity(university);
+      setBatch(batch);
+      
+      // Beta check
+      if (level === 'Panchayat' || level === 'State') {
+        setIsBeta(true);
+      } else {
+        setIsBeta(false);
+        // NAYA: Ab hum 5 lambe parameters ki jagah strictly ID bhej rahe hain
+        fetchCandidatesDirect(electionId);
+      }
+      
+      // Seedha Phase 2 par bhej do (Form Skip!)
+      setVotingPhase(2);
+      
+      // State clear kar do taaki refresh pe dubara na aaye
+      window.history.replaceState({}, document.title)
     }
-    setVotingPhase(2);
-  };
+  }, [location.state]);
 
-  const fetchCandidates = async () => {
+  // NAYA: Ek naya function jo directly ID receive karega
+  const fetchCandidatesDirect = async (elId) => {
     setIsLoading(true);
     try {
-      // Ab hum URL mein university aur batch bhi bhej rahe hain
-      const url = `http://localhost:8080/api/candidates?level=${electionLevel}&type=${electionType}&region=${region}&university=${university}&batch=${batch}`;
+      // NAYA MAGIC: Naya API endpoint jo sirf us election ID ke candidates layega
+      const url = `http://localhost:8080/api/candidates/election/${elId}`;
       const response = await fetch(url);
       
       if (response.ok) {
@@ -48,6 +66,17 @@ const VotePage = () => {
       setMessage({ text: 'Error connecting to the election server.', type: 'error' });
     }
     setIsLoading(false);
+  };
+
+  const handleSelectionSubmit = (e) => {
+    e.preventDefault();
+    if (electionLevel === 'Panchayat' || electionLevel === 'State') {
+      setIsBeta(true);
+    } else {
+      setIsBeta(false);
+      fetchCandidatesDirect(electionLevel, electionType, region, university, batch); 
+    }
+    setVotingPhase(2);
   };
 
   const castVote = async (candidateId, candidateName) => {
@@ -143,7 +172,6 @@ const VotePage = () => {
                   </select>
                 </div>
 
-                {/* College level hone par University aur Batch ke inputs dikhayenge */}
                 {electionLevel === 'College' && (
                   <div className="grid grid-cols-2 gap-4 p-4 bg-indigo-50 border border-indigo-100 rounded-lg">
                     <div>
@@ -206,6 +234,7 @@ const VotePage = () => {
                      <p className="text-sm font-semibold text-slate-600 mt-1">{university} | Batch: {batch}</p>
                   )}
                 </div>
+                {/* NAYA: Agar data peeche se aaya tha, toh "Change Election" wala button hide ya alag behaviour de sakte hain, par abhi simple rakhte hain */}
                 <button onClick={() => setVotingPhase(1)} className="text-sm font-bold text-indigo-600 hover:text-indigo-800 underline bg-white px-3 py-1 rounded border border-indigo-200">
                   Change Election
                 </button>
@@ -228,7 +257,6 @@ const VotePage = () => {
                           <User size={40} />
                         </div>
                         <h3 className="text-xl font-bold text-slate-800">{candidate.name}</h3>
-                        {/* Candidate Card me University aur Batch dikhana */}
                         {candidate.universityName && (
                           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">{candidate.universityName} • {candidate.batch}</p>
                         )}
