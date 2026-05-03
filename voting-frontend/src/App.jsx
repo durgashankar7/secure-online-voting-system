@@ -7,11 +7,19 @@ import LandingPage from './pages/LandingPage'; // Gateway Page
 import LoginPage from './pages/LoginPage';
 import VotePage from './pages/VotePage';
 import DashboardLayout from './components/DashboardLayout';
-import AdminPage from './pages/AdminPage';
 import ElectionsPage from './pages/ElectionsPage';
 import ResultsPage from './pages/ResultsPage';
 import SessionTimeout from './components/SessionTimeout';
 import ProfilePage from './pages/ProfilePage';
+import AdminLogin from './pages/AdminLogin';
+import AdminLayout from './components/AdminLayout';
+import AdminOverview from './pages/admin/AdminOverview';
+import ManageElections from './pages/admin/ManageElections';
+import ManageCandidates from './pages/admin/ManageCandidates';
+import ManageVoters from './pages/admin/ManageVoters';
+import SecurityLogs from './pages/admin/SecurityLogs';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminAbout from './pages/admin/AdminAbout';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -46,8 +54,26 @@ function App() {
           {/* 2. Voter Login Page */}
           <Route path="/voter-login" element={!isAuthenticated ? <LoginPage setAuth={setIsAuthenticated} /> : <Navigate to="/home" />} />
           
-          {/* 3. Admin Page (Iska apna alag login system hai) */}
-          <Route path="/admin" element={<AdminPage />} />
+          {/* 3. Admin Gateway (Login) */}
+          <Route path="/admin" element={<AdminLogin />} />
+          
+          {/* 4. ADMIN DASHBOARD NESTED ROUTES (NAYA ARCHITECTURE) */}
+          {/* Jab tak adminAuth true nahi hoga, in routes par nahi ja sakte */}
+          <Route 
+            path="/admin-dashboard" 
+            element={localStorage.getItem("adminAuth") === "true" ? <AdminLayout /> : <Navigate to="/admin" />}
+          >
+            {/* Default page (index) Overview hoga */}
+            <Route index element={<AdminOverview />} />
+            
+            {/* Baaki sab /admin-dashboard/elections aise rahenge */}
+            <Route path="elections" element={<ManageElections />} />
+            <Route path="candidates" element={<ManageCandidates />} />
+            <Route path="voters" element={<ManageVoters />} />
+            <Route path="security" element={<SecurityLogs />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="about" element={<AdminAbout />} />
+          </Route>
 
 
           {/* ========================================== */}
