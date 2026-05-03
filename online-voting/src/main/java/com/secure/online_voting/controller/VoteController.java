@@ -38,6 +38,9 @@ public class VoteController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate; 
 
+    @Autowired
+    private com.secure.online_voting.service.EmailService emailService;
+
     // API: Vote Cast karne ke liye
     @PostMapping
     @Transactional // ACID properties maintain karne ke liye
@@ -91,6 +94,20 @@ public class VoteController {
             String message = "UPDATE_" + candidate.getElectionLevel() + "_" + candidate.getElectionType() + "_" + candidate.getRegion();
             messagingTemplate.convertAndSend("/topic/results", message);
             System.out.println("Live Score Broadcasted: " + message);
+
+            // ---------------------------------------------------------
+            // 5. THE NEW MAGIC (EMAIL CONFIRMATION)
+            // ---------------------------------------------------------
+            // Naye thread me bhej rahe hain taaki voter ka page load hone me time na lage
+            new Thread(() -> {
+                if (voter.getEmail() != null) {
+                    emailService.sendVoteConfirmation(
+                        voter.getEmail(), 
+                        voter.getName(), 
+                        candidate.getElectionType() + " (" + candidate.getRegion() + ")"
+                    );
+                }
+            }).start();
         }
 
         return ResponseEntity.ok("Success: Your vote has been securely cast!");

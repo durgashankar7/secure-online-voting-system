@@ -82,8 +82,8 @@ const ResultsPage = () => {
   const fetchResults = async () => {
     setIsRefreshing(true);
     try {
-      const { electionLevel, electionType, region } = selectedElection;
-      const response = await fetch(`http://localhost:8080/api/results?level=${electionLevel}&type=${electionType}&region=${region}`);
+      // NAYA MAGIC: Yahan pehle lambe parameters bhej rahe the, ab strictly ID se candidate aur unke votes mangwa rahe hain
+      const response = await fetch(`http://localhost:8080/api/candidates/election/${selectedElection.electionId}`);
       if (response.ok) {
         const data = await response.json();
         // Descending order me sort karna (Sabse zyada vote wala upar)
@@ -129,8 +129,9 @@ const ResultsPage = () => {
             onChange={handleElectionChange}
           >
             {elections.map(el => (
+              // NAYA BONUS FIX: Dropdown me ab Title aur Batch dikhega taaki confusion na ho
               <option key={el.electionId} value={el.electionId}>
-                {el.electionType} ({el.region})
+                {el.electionTitle} ({el.batch || el.region})
               </option>
             ))}
           </select>
@@ -166,7 +167,7 @@ const ResultsPage = () => {
               <span className={`text-xs font-bold px-2 py-1 rounded uppercase tracking-wider mb-2 inline-block ${selectedElection.status === 'ONGOING' ? 'bg-red-500' : 'bg-green-500'}`}>
                 {selectedElection.status === 'ONGOING' ? 'LIVE COUNTING' : 'FINAL RESULTS'}
               </span>
-              <h3 className="text-xl font-bold pr-16">{selectedElection.electionType}</h3>
+              <h3 className="text-xl font-bold pr-16">{selectedElection.electionTitle}</h3>
               <p className="text-indigo-200 text-sm flex items-center gap-1 mt-1"><MapPin size={14}/> {selectedElection.region} ({selectedElection.electionLevel})</p>
             </div>
             <div className="text-right mt-6">
@@ -189,7 +190,7 @@ const ResultsPage = () => {
                   const isLeader = index === 0 && candidate.votes > 0;
 
                   return (
-                    <div key={candidate.id} className="relative">
+                    <div key={candidate.candidateId || candidate.id} className="relative">
                       <div className="flex justify-between items-end mb-2">
                         <div className="flex items-center gap-2">
                           {isLeader && <Trophy size={18} className="text-orange-500" />}

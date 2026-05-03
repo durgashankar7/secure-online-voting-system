@@ -35,16 +35,28 @@ public class ResultController {
 private PdfService pdfService;
 
 @GetMapping("/download")
-    public ResponseEntity<byte[]> downloadPdf(@RequestParam String level, @RequestParam String type, @RequestParam String region) {
+    public ResponseEntity<byte[]> downloadPdf(
+            @RequestParam Integer electionId, 
+            @RequestParam String title) {
         
-        // YEH HAI JADOO: Hum direct apne "getLiveResults" API se exact wo data le rahe hain jo UI pe dikhta hai!
-        List<Map<String, Object>> results = getLiveResults(level, type, region);
+        List<Candidate> candidates = candidateRepository.findByElectionId(electionId);
         
-        String title = type + " Results - " + region;
+        List<Map<String, Object>> results = new ArrayList<>();
+        for (Candidate candidate : candidates) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", candidate.getName());
+            map.put("department", candidate.getDepartment());
+            map.put("votes", candidate.getVotes()); 
+            results.add(map);
+        }
+        
+        // Sabse zyada vote wale ko list me upar (Top) rakhne ke liye sort
+        results.sort((a, b) -> Integer.compare((Integer) b.get("votes"), (Integer) a.get("votes")));
+
         byte[] pdfContent = pdfService.generateResultPdf(title, results);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + type.replace(" ", "_") + "_Results.pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + title.replaceAll(" ", "_") + "_Results.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfContent);
     }

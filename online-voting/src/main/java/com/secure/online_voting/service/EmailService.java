@@ -36,4 +36,26 @@ public class EmailService {
         mailSender.send(message);
         System.out.println("Real Email Sent Successfully to: " + to);
     }
+    // -----------------------------------------------------------
+    // 3. NAYA FUNCTION: Vote Confirmation Email ke liye
+    // -----------------------------------------------------------
+    public void sendVoteConfirmation(String toEmail, String voterName, String electionName) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            
+            message.setTo(toEmail);
+            message.setSubject("Vote Cast Successful - Election Commission Portal");
+            message.setText("Namaste " + voterName + ",\n\n"
+                    + "This is an official confirmation that your vote for the '" + electionName + "' has been securely recorded in our system.\n\n"
+                    + "Thank you for participating in the democratic process!\n\n"
+                    + "Regards,\n"
+                    + "Election Commission Portal System");
+            
+            mailSender.send(message);
+            System.out.println("✅ Vote Confirmation Email Sent to: " + toEmail);
+            
+        } catch (RuntimeException e) {
+            System.out.println("❌ Confirmation Email failed: " + e.getMessage());
+        }
+    }
 }
